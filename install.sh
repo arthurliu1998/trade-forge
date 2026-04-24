@@ -41,8 +41,30 @@ chmod 600 "$TRADE_FORGE_HOME/.env" 2>/dev/null || true
 chmod 600 "$TRADE_FORGE_HOME/config.yaml" 2>/dev/null || true
 chmod 700 "$TRADE_FORGE_HOME"/{runs,backups,logs}
 
-# 5. Install git hooks (if in a git repo)
-echo "[5/6] Installing git safety hooks..."
+# 5. Install trading experience system
+echo "[5/7] Installing trading experience system..."
+TRADING_NOTES="$HOME/.claude/notes/trading"
+TRADING_SRC="$REPO_DIR/docs/trading-experience"
+if [ -d "$TRADING_SRC" ]; then
+    mkdir -p "$TRADING_NOTES/cases"
+    # Copy reference files (always overwrite — these are templates/references)
+    for f in playbook.md diagnostics.md patterns.md learning-log.md; do
+        if [ ! -f "$TRADING_NOTES/$f" ] || [ "$1" = "--update" ]; then
+            cp "$TRADING_SRC/$f" "$TRADING_NOTES/$f"
+        fi
+    done
+    # Cases index — only if not exists (preserve user's recorded cases)
+    [ ! -f "$TRADING_NOTES/cases.md" ] && cp "$TRADING_SRC/cases.md" "$TRADING_NOTES/cases.md"
+    # Template and README — always update
+    cp "$TRADING_SRC/cases/case-000-template.md" "$TRADING_NOTES/cases/"
+    cp "$TRADING_SRC/cases/README.md" "$TRADING_NOTES/cases/"
+    echo "  Trading experience files installed to $TRADING_NOTES"
+else
+    echo "  No trading experience docs found — skipping"
+fi
+
+# 6. Install git hooks (if in a git repo)
+echo "[6/7] Installing git safety hooks..."
 if [ -d "$REPO_DIR/.git" ]; then
     HOOK="$REPO_DIR/.git/hooks/pre-commit"
     cat > "$HOOK" << 'HOOKEOF'
@@ -62,8 +84,8 @@ else
     echo "  Not a git repo — skipping hooks"
 fi
 
-# 6. Check for git history leaks
-echo "[6/6] Security checks..."
+# 7. Check for git history leaks
+echo "[7/7] Security checks..."
 if [ -d "$REPO_DIR/.git" ]; then
     if git -C "$REPO_DIR" log --all --diff-filter=A --name-only 2>/dev/null | grep -q '\.env$'; then
         echo "  WARNING: .env was previously tracked in git history!"

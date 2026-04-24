@@ -126,7 +126,129 @@ Every ~5 trading sessions, prompt:
 
 > 要不要更新 `trading/learning-log.md` 的技能自評？
 
-## Report Format
+## Watchlist Scan & Analyze Workflow
+
+When running `/trade-forge scan full`, follow this procedure:
+
+### Step 1: Scan All Symbols
+
+```bash
+python3 -c "
+from trade_forge.config import load_config
+from trade_forge.monitor.scanner import WatchlistScanner
+config = load_config()
+scanner = WatchlistScanner(config)
+signals = scanner.scan_all()
+for s in sorted(signals, key=lambda x: x.priority):
+    print(f'[{s.priority}] {s.symbol}: {s.message} ({s.direction})')
+if not signals:
+    print('No signals detected across watchlist')
+"
+```
+
+### Step 2: Triage
+
+Group signals by symbol. For each symbol, take the highest-priority signal.
+Select top symbols for deep analysis:
+
+- **Max 5 symbols** for parallel analysis (resource limit)
+- Priority order: CRITICAL → HIGH → MEDIUM
+- LOW priority: report signal only, skip deep analysis
+- No signals: list as "No Signal" in final report
+
+### Step 3: Get Market Regime (once, shared across all analyses)
+
+```bash
+python3 -c "
+from trade_forge.data.fetch_us import fetch_ohlcv
+spy = fetch_ohlcv('SPY', period='6mo')
+if not spy.empty:
+    ma200 = spy['Close'].rolling(200).mean().iloc[-1] if len(spy) >= 200 else spy['Close'].mean()
+    current = spy['Close'].iloc[-1]
+    print(f'SPY: {current:.2f}, 200MA: {ma200:.2f}, Trend: {\"bullish\" if current > ma200 else \"bearish\"}')
+"
+```
+
+### Step 4: Launch Parallel Scan-Analysts
+
+Read `${CLAUDE_SKILL_DIR}/roles/scan-analyst.md` template.
+For each selected symbol, fill placeholders and spawn:
+
+```
+Agent({
+  prompt: <filled scan-analyst template>,
+  name: "scan-<SYMBOL>",
+  subagent_type: "general-purpose",
+  run_in_background: true
+})
+```
+
+**IMPORTANT: Launch ALL subagents in a single message** for true parallelism.
+Do not wait for one to finish before launching the next.
+
+Fill these placeholders in the template:
+- `{{SYMBOL}}` — stock ticker
+- `{{MARKET}}` — US or TW
+- `{{SIGNALS}}` — the detected signals for this symbol
+- `{{REGIME_CONTEXT}}` — the market regime data from Step 3
+
+### Step 5: Collect & Synthesize
+
+As each subagent completes, parse the `SCAN_RESULT` block from its response.
+After all complete, synthesize into the Watchlist Scan Report (see format below).
+
+Rank symbols by overall_score descending. Highlight the top pick with reasoning.
+
+### Step 6: Follow-Up
+
+Present the report and ask:
+- "要深入分析哪一檔？" → full `/trade-forge analyze <SYMBOL>` with all agents
+- "要直接操作嗎？" → proceed to Executor (still requires user confirmation)
+- "先這樣" → done
+
+## Report Formats
+
+### Single Stock Report
+
+```
+══════════════════════════════════
+TradeForge Analysis Report
+══════════════════════════════════
+Symbol: XXX
+Regime: BULL-CALM / BULL-VOLATILE / BEAR-GRIND / BEAR-PANIC
+[Technical]    Score: X/10
+[Market]       Score: X/10
+[Flow]         Score: X/10
+[News]         Score: X/10
+[Quant]        Verdict: VALID/REJECT
+[Risk]         Score: X/10
+══════════════════════════════════
+RECOMMENDATION: BUY/SELL/HOLD (Confidence: XX%)
+Diagnostic: SIG-XXX (if applicable)
+══════════════════════════════════
+```
+
+### Watchlist Scan Report
+
+```
+══════════════════════════════════════════════════════
+TradeForge Watchlist Scan — YYYY-MM-DD HH:MM
+══════════════════════════════════════════════════════
+Regime: XXXX | SPY: $XXX | VIX: XX
+Scanned: N symbols (US: X, TW: X)
+Signals found: N across M symbols
+
+Rank | Symbol | Signal        | Tech | Mkt | Risk | Rec    | Conf
+─────┼────────┼───────────────┼──────┼─────┼──────┼────────┼─────
+  1  | NVDA   | RSI oversold  | 8    | 7   | 7    | BUY    | 75%
+  2  | AAPL   | MA20 cross up | 7    | 7   | 6    | BUY    | 65%
+  3  | 2330   | Vol spike 3x  | 6    | 5   | 5    | WATCH  | 45%
+  ── | TSLA   | No signal     |  —   |  —  |  —   |  —     |  —
+  ── | MSFT   | No signal     |  —   |  —  |  —   |  —     |  —
+══════════════════════════════════════════════════════
+Top pick: NVDA — [one-line reasoning]
+══════════════════════════════════════════════════════
+```
 
 ```
 ══════════════════════════════════

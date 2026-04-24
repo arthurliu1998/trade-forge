@@ -6,10 +6,10 @@ description: >
   Quant, Risk, Executor) for signal detection, analysis, and semi-automated
   trading. Includes trajectory tracking, diagnostic codes (SIG/RGM/RSK/BHV),
   trade case studies, and learning experience system.
-  Trigger: "analyze TSLA", "scan watchlist", "market brief", "/trade-forge",
-  "review trade", "trade journal".
+  Trigger: "analyze TSLA", "scan watchlist", "scan full", "market brief",
+  "/trade-forge", "review trade", "trade journal".
 user-invocable: true
-argument-hint: "[analyze <SYMBOL> | scan | brief | portfolio | review | journal | load <name>]"
+argument-hint: "[analyze <SYMBOL> | scan [full] | brief | portfolio | review | journal | load <name>]"
 ---
 
 # TradeForge: Multi-Agent Trading Analysis System
@@ -20,7 +20,8 @@ argument-hint: "[analyze <SYMBOL> | scan | brief | portfolio | review | journal 
 |---------|--------|
 | `/trade-forge` | New team setup wizard |
 | `/trade-forge analyze <SYMBOL>` | Full analysis of a single stock |
-| `/trade-forge scan` | Scan watchlist for signals |
+| `/trade-forge scan` | Quick scan watchlist for signals |
+| `/trade-forge scan full` | Scan + parallel multi-agent analysis for top signals |
 | `/trade-forge brief` | Morning/evening market brief |
 | `/trade-forge portfolio` | Show positions and P&L |
 | `/trade-forge review [SYMBOL]` | Post-trade review with Socratic analysis |
@@ -32,7 +33,8 @@ argument-hint: "[analyze <SYMBOL> | scan | brief | portfolio | review | journal 
 Parse `$ARGUMENTS`:
 - **(empty)** → New Team Setup wizard
 - **`analyze <SYMBOL>`** → Single Stock Analysis
-- **`scan`** → Watchlist Scan
+- **`scan`** → Quick Watchlist Scan (signals only)
+- **`scan full`** → Full Watchlist Scan with Parallel Multi-Agent Analysis
 - **`brief`** → Market Brief
 - **`portfolio`** → Portfolio View
 - **`review [SYMBOL]`** → Trade Review
@@ -62,6 +64,117 @@ Walk through one at a time:
 ## Single Stock Analysis (`analyze <SYMBOL>`)
 
 Spawn Technical + Market + Risk. Analyze → synthesize → report.
+
+---
+
+## Quick Watchlist Scan (`scan`)
+
+Run `WatchlistScanner.scan_all()` across all symbols in config watchlist.
+Output detected signals sorted by priority. No multi-agent analysis — fast check only.
+
+```bash
+python3 -c "
+from trade_forge.config import load_config
+from trade_forge.monitor.scanner import WatchlistScanner
+config = load_config()
+scanner = WatchlistScanner(config)
+signals = scanner.scan_all()
+for s in sorted(signals, key=lambda x: x.priority):
+    print(f'[{s.priority}] {s.symbol}: {s.message} ({s.direction})')
+"
+```
+
+---
+
+## Full Watchlist Scan with Auto-Triage (`scan full`)
+
+Scans all watchlist symbols, then launches **parallel multi-agent analysis** for the top signals.
+
+### Flow
+
+```
+1. Scan all symbols → collect signals
+2. Triage: group by symbol, rank by priority (CRITICAL > HIGH > MEDIUM > LOW)
+3. Select top N symbols (max 5) with highest-priority signals
+4. Spawn parallel Scan-Analyst subagents (one per symbol, up to 5 concurrent)
+5. Collect results → synthesize unified watchlist report
+6. Symbols with no signals: listed as "No Signal" (not analyzed)
+```
+
+### Step 1: Signal Scan
+
+```bash
+python3 -c "
+from trade_forge.config import load_config
+from trade_forge.monitor.scanner import WatchlistScanner
+config = load_config()
+scanner = WatchlistScanner(config)
+signals = scanner.scan_all()
+for s in sorted(signals, key=lambda x: x.priority):
+    print(f'[{s.priority}] {s.symbol}: {s.message} ({s.direction})')
+"
+```
+
+### Step 2: Triage
+
+Group signals by symbol. For each symbol, take the highest-priority signal.
+Sort symbols by their top signal priority:
+
+| Priority | Action |
+|----------|--------|
+| CRITICAL | Always analyze (first in queue) |
+| HIGH | Analyze if slots available (max 5 total) |
+| MEDIUM | Analyze if slots available |
+| LOW | Skip (report signal only, no deep analysis) |
+
+If more than 5 symbols have HIGH+ signals, pick the 5 with most signals or highest volume spike.
+
+### Step 3: Parallel Analysis
+
+For each selected symbol, spawn a **Scan-Analyst** subagent:
+
+```
+Agent({
+  prompt: <filled scan-analyst.md template>,
+  name: "scan-<SYMBOL>",
+  subagent_type: "general-purpose",
+  run_in_background: true
+})
+```
+
+Read the template from `${CLAUDE_SKILL_DIR}/roles/scan-analyst.md`.
+Fill placeholders: `{{SYMBOL}}`, `{{MARKET}}`, `{{SIGNALS}}`, `{{REGIME_CONTEXT}}`.
+
+**All subagents are launched in a single message** for true parallelism.
+
+### Step 4: Synthesize Report
+
+After all subagents return, synthesize into a unified report:
+
+```
+══════════════════════════════════════════════════════
+TradeForge Watchlist Scan Report — YYYY-MM-DD HH:MM
+══════════════════════════════════════════════════════
+Regime: BULL-CALM | SPY: $XXX (>200MA) | VIX: XX
+
+Rank | Symbol | Signal        | Tech | Mkt | Risk | Rec    | Confidence
+─────┼────────┼───────────────┼──────┼─────┼──────┼────────┼───────────
+  1  | NVDA   | RSI oversold  | 8/10 | 7   | 7    | BUY    | 75%
+  2  | AAPL   | MA20 cross up | 7/10 | 7   | 6    | BUY    | 65%
+  3  | 2330   | Vol spike 3x  | 6/10 | 5   | 5    | WATCH  | 45%
+  ── | TSLA   | No signal     |  —   |  —  |  —   |  —     |  —
+  ── | MSFT   | No signal     |  —   |  —  |  —   |  —     |  —
+══════════════════════════════════════════════════════
+Top pick: NVDA — RSI oversold in uptrend, strong RS vs sector
+══════════════════════════════════════════════════════
+```
+
+### Step 5: Follow-Up
+
+After presenting the report, ask user:
+1. "要深入分析哪一檔？" → launch full `/trade-forge analyze <SYMBOL>`
+2. "要執行嗎？" → proceed to Executor flow (with user confirmation)
+3. "下次再看" → done
 
 ---
 
