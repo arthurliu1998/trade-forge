@@ -1,5 +1,5 @@
 import pytest
-from trade_forge.monitor.alpaca_stream import AlpacaStream
+from quantforge.monitor.alpaca_stream import AlpacaStream
 
 
 class TestAlpacaStream:

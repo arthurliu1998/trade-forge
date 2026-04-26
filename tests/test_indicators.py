@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from trade_forge.analysis.indicators import (
+from quantforge.analysis.indicators import (
     compute_ma, compute_rsi, compute_macd, compute_kd,
     compute_bollinger, compute_atr, compute_volume_ratio, compute_all,
 )

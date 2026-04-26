@@ -1,7 +1,7 @@
 [project]
-name = "trade-forge"
+name = "quantforge"
 version = "0.1.0"
-description = "Multi-agent trading analysis system"
+description = "Quantitative trading system with LLM intelligence layer"
 requires-python = ">=3.10"
 
 [project.optional-dependencies]

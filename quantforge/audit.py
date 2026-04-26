@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
-AUDIT_PATH = os.path.expanduser("~/.trade-forge/audit.log")
+AUDIT_PATH = os.path.expanduser("~/.quantforge/audit.log")
 
 
 class AuditLog:

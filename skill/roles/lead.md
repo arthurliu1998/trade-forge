@@ -62,7 +62,7 @@ Record every trade decision:
 
 ```bash
 python3 -c "
-from trade_forge.trajectory import TradeTrajectory
+from quantforge.trajectory import TradeTrajectory
 t = TradeTrajectory('{{TRAJECTORY_PATH}}')
 t.record(symbol='XXX', direction='long/short', signal_type='...',
          diagnostic_code='SIG-XXX', entry_price=0, status='open')
@@ -128,14 +128,14 @@ Every ~5 trading sessions, prompt:
 
 ## Watchlist Scan & Analyze Workflow
 
-When running `/trade-forge scan full`, follow this procedure:
+When running `/quantforge scan full`, follow this procedure:
 
 ### Step 1: Scan All Symbols
 
 ```bash
 python3 -c "
-from trade_forge.config import load_config
-from trade_forge.monitor.scanner import WatchlistScanner
+from quantforge.config import load_config
+from quantforge.monitor.scanner import WatchlistScanner
 config = load_config()
 scanner = WatchlistScanner(config)
 signals = scanner.scan_all()
@@ -160,7 +160,7 @@ Select top symbols for deep analysis:
 
 ```bash
 python3 -c "
-from trade_forge.data.fetch_us import fetch_ohlcv
+from quantforge.data.fetch_us import fetch_ohlcv
 spy = fetch_ohlcv('SPY', period='6mo')
 if not spy.empty:
     ma200 = spy['Close'].rolling(200).mean().iloc[-1] if len(spy) >= 200 else spy['Close'].mean()
@@ -202,7 +202,7 @@ Rank symbols by overall_score descending. Highlight the top pick with reasoning.
 ### Step 6: Follow-Up
 
 Present the report and ask:
-- "要深入分析哪一檔？" → full `/trade-forge analyze <SYMBOL>` with all agents
+- "要深入分析哪一檔？" → full `/quantforge analyze <SYMBOL>` with all agents
 - "要直接操作嗎？" → proceed to Executor (still requires user confirmation)
 - "先這樣" → done
 
@@ -212,7 +212,7 @@ Present the report and ask:
 
 ```
 ══════════════════════════════════
-TradeForge Analysis Report
+QuantForge Analysis Report
 ══════════════════════════════════
 Symbol: XXX
 Regime: BULL-CALM / BULL-VOLATILE / BEAR-GRIND / BEAR-PANIC
@@ -232,7 +232,7 @@ Diagnostic: SIG-XXX (if applicable)
 
 ```
 ══════════════════════════════════════════════════════
-TradeForge Watchlist Scan — YYYY-MM-DD HH:MM
+QuantForge Watchlist Scan — YYYY-MM-DD HH:MM
 ══════════════════════════════════════════════════════
 Regime: XXXX | SPY: $XXX | VIX: XX
 Scanned: N symbols (US: X, TW: X)
@@ -252,7 +252,7 @@ Top pick: NVDA — [one-line reasoning]
 
 ```
 ══════════════════════════════════
-TradeForge Analysis Report
+QuantForge Analysis Report
 ══════════════════════════════════
 Symbol: XXX
 Regime: BULL-CALM / BULL-VOLATILE / BEAR-GRIND / BEAR-PANIC

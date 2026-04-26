@@ -1,34 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
-TRADE_FORGE_HOME="$HOME/.trade-forge"
+QUANTFORGE_HOME="$HOME/.quantforge"
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "=== TradeForge Installer ==="
+echo "=== QuantForge Installer ==="
 
 # 1. Create data directory structure
 echo "[1/6] Creating data directories..."
-mkdir -p "$TRADE_FORGE_HOME"/{data,runs,backups,logs}
+mkdir -p "$QUANTFORGE_HOME"/{data,runs,backups,logs}
 
 # 2. Set up Python virtual environment
 echo "[2/6] Setting up Python environment..."
-if [ ! -d "$TRADE_FORGE_HOME/.venv" ]; then
-    python3 -m venv "$TRADE_FORGE_HOME/.venv"
+if [ ! -d "$QUANTFORGE_HOME/.venv" ]; then
+    python3 -m venv "$QUANTFORGE_HOME/.venv"
 fi
-source "$TRADE_FORGE_HOME/.venv/bin/activate"
+source "$QUANTFORGE_HOME/.venv/bin/activate"
 pip install -q -r "$REPO_DIR/requirements.txt"
 
 # 3. Copy config templates (don't overwrite existing)
 echo "[3/6] Setting up configuration..."
-if [ ! -f "$TRADE_FORGE_HOME/.env" ]; then
-    cp "$REPO_DIR/.env.example" "$TRADE_FORGE_HOME/.env"
-    echo "  Created .env — edit $TRADE_FORGE_HOME/.env to add API keys"
+if [ ! -f "$QUANTFORGE_HOME/.env" ]; then
+    cp "$REPO_DIR/.env.example" "$QUANTFORGE_HOME/.env"
+    echo "  Created .env — edit $QUANTFORGE_HOME/.env to add API keys"
 else
     echo "  .env already exists — skipping"
 fi
 
-if [ ! -f "$TRADE_FORGE_HOME/config.yaml" ]; then
-    cp "$REPO_DIR/config.yaml.example" "$TRADE_FORGE_HOME/config.yaml"
+if [ ! -f "$QUANTFORGE_HOME/config.yaml" ]; then
+    cp "$REPO_DIR/config.yaml.example" "$QUANTFORGE_HOME/config.yaml"
     echo "  Created config.yaml — edit to set your watchlist"
 else
     echo "  config.yaml already exists — skipping"
@@ -36,10 +36,10 @@ fi
 
 # 4. Set file permissions
 echo "[4/6] Setting file permissions..."
-chmod 700 "$TRADE_FORGE_HOME"
-chmod 600 "$TRADE_FORGE_HOME/.env" 2>/dev/null || true
-chmod 600 "$TRADE_FORGE_HOME/config.yaml" 2>/dev/null || true
-chmod 700 "$TRADE_FORGE_HOME"/{runs,backups,logs}
+chmod 700 "$QUANTFORGE_HOME"
+chmod 600 "$QUANTFORGE_HOME/.env" 2>/dev/null || true
+chmod 600 "$QUANTFORGE_HOME/config.yaml" 2>/dev/null || true
+chmod 700 "$QUANTFORGE_HOME"/{runs,backups,logs}
 
 # 5. Install trading experience system
 echo "[5/7] Installing trading experience system..."
@@ -98,9 +98,9 @@ else
 fi
 
 echo ""
-echo "=== TradeForge installed ==="
+echo "=== QuantForge installed ==="
 echo "Next steps:"
-echo "  1. Edit $TRADE_FORGE_HOME/.env to add API keys"
-echo "  2. Edit $TRADE_FORGE_HOME/config.yaml to set your watchlist"
-echo "  3. Activate: source $TRADE_FORGE_HOME/.venv/bin/activate"
+echo "  1. Edit $QUANTFORGE_HOME/.env to add API keys"
+echo "  2. Edit $QUANTFORGE_HOME/config.yaml to set your watchlist"
+echo "  3. Activate: source $QUANTFORGE_HOME/.venv/bin/activate"
 echo "  4. Test: cd $REPO_DIR && python -m pytest tests/ -v"

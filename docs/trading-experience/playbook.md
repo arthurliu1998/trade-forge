@@ -120,17 +120,17 @@ After each trade closes:
 
 ```bash
 # Fetch US stock data
-python3 -c "from trade_forge.data.fetch_us import fetch_ohlcv; print(fetch_ohlcv('AAPL', period='3mo'))"
+python3 -c "from quantforge.data.fetch_us import fetch_ohlcv; print(fetch_ohlcv('AAPL', period='3mo'))"
 
 # Fetch TW institutional flow
-python3 -c "from trade_forge.data.fetch_tw import fetch_tw_institutional; print(fetch_tw_institutional('2330'))"
+python3 -c "from quantforge.data.fetch_tw import fetch_tw_institutional; print(fetch_tw_institutional('2330'))"
 
 # Compute indicators
-python3 -c "from trade_forge.analysis.indicators import compute_all; from trade_forge.data.fetch_us import fetch_ohlcv; print(compute_all(fetch_ohlcv('AAPL')))"
+python3 -c "from quantforge.analysis.indicators import compute_all; from quantforge.data.fetch_us import fetch_ohlcv; print(compute_all(fetch_ohlcv('AAPL')))"
 
 # Run signal scan
-python3 -c "from trade_forge.signals.engine import detect_signals; from trade_forge.data.fetch_us import fetch_ohlcv; print(detect_signals(fetch_ohlcv('AAPL')))"
+python3 -c "from quantforge.signals.engine import detect_signals; from quantforge.data.fetch_us import fetch_ohlcv; print(detect_signals(fetch_ohlcv('AAPL')))"
 
 # Backtest
-python3 -c "from trade_forge.backtester import Backtester; b = Backtester(); print(b.run('AAPL', 'rsi_oversold'))"
+python3 -c "from quantforge.backtester import Backtester; b = Backtester(); print(b.run('AAPL', 'rsi_oversold'))"
 ```

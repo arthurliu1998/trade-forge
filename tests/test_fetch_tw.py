@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from trade_forge.data.fetch_tw import fetch_tw_daily, fetch_tw_institutional
+from quantforge.data.fetch_tw import fetch_tw_daily, fetch_tw_institutional
 
 
 class TestFetchTWDaily:

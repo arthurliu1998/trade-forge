@@ -9,7 +9,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-from trade_forge._patterns import KEY_PATTERNS, AMOUNT_PATTERNS
+from quantforge._patterns import KEY_PATTERNS, AMOUNT_PATTERNS
 
 
 class SanitizingFilter(logging.Filter):
@@ -48,7 +48,7 @@ def setup_logging(log_dir: str = None, level: int = logging.INFO) -> logging.Log
     Returns:
         Configured root logger.
     """
-    logger = logging.getLogger("trade_forge")
+    logger = logging.getLogger("quantforge")
     logger.setLevel(level)
 
     # Add sanitizing filter

@@ -1,5 +1,5 @@
 import pytest
-from trade_forge.audit import AuditLog
+from quantforge.audit import AuditLog
 
 
 @pytest.fixture

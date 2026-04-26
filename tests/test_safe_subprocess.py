@@ -1,7 +1,7 @@
 import os
 import pytest
-from trade_forge.providers.safe_subprocess import safe_run
-from trade_forge.secrets import SecretManager
+from quantforge.providers.safe_subprocess import safe_run
+from quantforge.secrets import SecretManager
 
 SENSITIVE_VARS = SecretManager.SECRETS
 

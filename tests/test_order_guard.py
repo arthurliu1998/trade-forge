@@ -1,5 +1,5 @@
 import pytest
-from trade_forge.order_guard import OrderGuard
+from quantforge.order_guard import OrderGuard
 
 
 @pytest.fixture

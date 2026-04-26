@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from trade_forge.data.fetch_us import fetch_ohlcv, fetch_current_price, fetch_company_info
+from quantforge.data.fetch_us import fetch_ohlcv, fetch_current_price, fetch_company_info
 
 
 class TestFetchOHLCV:

@@ -11,7 +11,7 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-DB_PATH = os.path.expanduser("~/.trade-forge/portfolio.db")
+DB_PATH = os.path.expanduser("~/.quantforge/portfolio.db")
 
 
 @dataclass

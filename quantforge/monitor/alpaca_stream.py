@@ -7,7 +7,7 @@ import asyncio
 import logging
 from typing import Callable, Optional
 
-from trade_forge.secrets import SecretManager
+from quantforge.secrets import SecretManager
 
 logger = logging.getLogger(__name__)
 

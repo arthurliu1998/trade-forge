@@ -1,5 +1,5 @@
 import pytest
-from trade_forge.providers.sanitizer import DataSanitizer
+from quantforge.providers.sanitizer import DataSanitizer
 
 
 class TestSanitizeForLLM:

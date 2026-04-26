@@ -1,6 +1,6 @@
 import os
 import pytest
-from trade_forge.portfolio import PortfolioDB, Position, Trade
+from quantforge.portfolio import PortfolioDB, Position, Trade
 
 
 @pytest.fixture

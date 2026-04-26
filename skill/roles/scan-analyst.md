@@ -17,8 +17,8 @@ This symbol was flagged by the scanner with these signals:
 
 ```bash
 python3 -c "
-from trade_forge.data.fetch_us import fetch_ohlcv, fetch_current_price
-from trade_forge.analysis.indicators import compute_all
+from quantforge.data.fetch_us import fetch_ohlcv, fetch_current_price
+from quantforge.analysis.indicators import compute_all
 import json
 
 df = fetch_ohlcv('{{SYMBOL}}', period='6mo')
@@ -70,7 +70,7 @@ If no context provided, make a quick check:
 
 ```bash
 python3 -c "
-from trade_forge.data.fetch_us import fetch_ohlcv
+from quantforge.data.fetch_us import fetch_ohlcv
 import json
 
 spy = fetch_ohlcv('SPY', period='6mo')

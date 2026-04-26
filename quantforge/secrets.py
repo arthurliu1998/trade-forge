@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
-_ENV_PATH = os.path.expanduser("~/.trade-forge/.env")
+_ENV_PATH = os.path.expanduser("~/.quantforge/.env")
 if os.path.exists(_ENV_PATH):
     load_dotenv(_ENV_PATH)
 
@@ -19,14 +19,14 @@ class SecretManager:
         "ALPACA_DATA_KEY", "ALPACA_DATA_SECRET",
         "ALPACA_TRADE_KEY", "ALPACA_TRADE_SECRET",
         "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID",
-        "TRADE_FORGE_DB_KEY",
+        "QUANTFORGE_DB_KEY",
     })
 
     @staticmethod
     def get(key: str) -> str:
         try:
             import keyring as kr
-            val = kr.get_password("trade-forge", key)
+            val = kr.get_password("quantforge", key)
             if val:
                 return val
         except Exception:

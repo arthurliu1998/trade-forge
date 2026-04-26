@@ -1,6 +1,6 @@
 import pickle
 import pytest
-from trade_forge.providers.base import LLMProvider
+from quantforge.providers.base import LLMProvider
 
 
 class DummyProvider(LLMProvider):

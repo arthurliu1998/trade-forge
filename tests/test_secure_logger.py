@@ -1,6 +1,6 @@
 import logging
 import pytest
-from trade_forge.monitor.secure_logger import SanitizingFilter, setup_logging
+from quantforge.monitor.secure_logger import SanitizingFilter, setup_logging
 
 
 @pytest.fixture
@@ -59,7 +59,7 @@ class TestSetupLogging:
     def test_returns_logger(self):
         logger = setup_logging()
         assert isinstance(logger, logging.Logger)
-        assert logger.name == "trade_forge"
+        assert logger.name == "quantforge"
 
     def test_blocks_http_debug(self):
         setup_logging()

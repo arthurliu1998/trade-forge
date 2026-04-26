@@ -1,5 +1,5 @@
 import pytest
-from trade_forge.monitor.monitor import TradeMonitor
+from quantforge.monitor.monitor import TradeMonitor
 
 
 @pytest.fixture

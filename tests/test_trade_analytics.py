@@ -1,6 +1,6 @@
 import pytest
-from trade_forge.portfolio import PortfolioDB, Trade
-from trade_forge.trade_analytics import TradeAnalytics, AnalyticsReport
+from quantforge.portfolio import PortfolioDB, Trade
+from quantforge.trade_analytics import TradeAnalytics, AnalyticsReport
 
 
 @pytest.fixture

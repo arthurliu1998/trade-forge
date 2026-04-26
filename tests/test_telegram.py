@@ -1,6 +1,6 @@
 import pytest
-from trade_forge.notify.telegram import TelegramNotifier, format_signal_message
-from trade_forge.signals.engine import Signal
+from quantforge.notify.telegram import TelegramNotifier, format_signal_message
+from quantforge.signals.engine import Signal
 
 
 class TestFormatSignalMessage:

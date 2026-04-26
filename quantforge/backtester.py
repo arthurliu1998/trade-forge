@@ -9,8 +9,8 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from trade_forge.analysis.indicators import compute_all
-from trade_forge.signals.engine import SignalEngine
+from quantforge.analysis.indicators import compute_all
+from quantforge.signals.engine import SignalEngine
 
 logger = logging.getLogger(__name__)
 

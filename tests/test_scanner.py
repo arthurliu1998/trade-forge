@@ -1,6 +1,6 @@
 import pytest
-from trade_forge.monitor.scanner import WatchlistScanner
-from trade_forge.signals.engine import Signal
+from quantforge.monitor.scanner import WatchlistScanner
+from quantforge.signals.engine import Signal
 
 
 @pytest.fixture

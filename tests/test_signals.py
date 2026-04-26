@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from trade_forge.signals.engine import SignalEngine, Signal
+from quantforge.signals.engine import SignalEngine, Signal
 
 
 @pytest.fixture

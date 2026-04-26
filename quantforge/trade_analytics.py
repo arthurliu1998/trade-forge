@@ -8,7 +8,7 @@ Answers questions like:
 """
 import logging
 from dataclasses import dataclass
-from trade_forge.portfolio import PortfolioDB, Trade
+from quantforge.portfolio import PortfolioDB, Trade
 
 logger = logging.getLogger(__name__)
 

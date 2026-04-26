@@ -2,7 +2,7 @@
 import sys
 import traceback
 
-from trade_forge._patterns import KEY_PATTERNS
+from quantforge._patterns import KEY_PATTERNS
 
 
 def sanitize_text(text: str) -> str:

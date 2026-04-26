@@ -1,4 +1,4 @@
-from trade_forge.safe_exceptions import sanitize_text, KEY_PATTERNS
+from quantforge.safe_exceptions import sanitize_text, KEY_PATTERNS
 
 
 def test_redacts_anthropic_key():

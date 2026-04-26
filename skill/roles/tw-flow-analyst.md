@@ -12,7 +12,7 @@
 
 ```bash
 python3 -c "
-from trade_forge.data.fetch_tw import fetch_tw_institutional
+from quantforge.data.fetch_tw import fetch_tw_institutional
 data = fetch_tw_institutional('{{SYMBOL}}')
 print(data)
 "

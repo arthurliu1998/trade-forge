@@ -1,6 +1,6 @@
 import os
 import pytest
-from trade_forge.secrets import SecretManager
+from quantforge.secrets import SecretManager
 
 
 def test_get_from_env(monkeypatch):

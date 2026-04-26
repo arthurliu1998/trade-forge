@@ -1,7 +1,7 @@
 import pytest
-from trade_forge.providers.router import LLMRouter, AllProvidersFailedError
-from trade_forge.providers.claude_provider import ClaudeProvider
-from trade_forge.providers.gemini_provider import GeminiProvider
+from quantforge.providers.router import LLMRouter, AllProvidersFailedError
+from quantforge.providers.claude_provider import ClaudeProvider
+from quantforge.providers.gemini_provider import GeminiProvider
 
 
 def test_router_repr():

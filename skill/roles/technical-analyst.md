@@ -17,8 +17,8 @@
 ```bash
 # US stock
 python3 -c "
-from trade_forge.data.fetch_us import fetch_ohlcv
-from trade_forge.analysis.indicators import compute_all
+from quantforge.data.fetch_us import fetch_ohlcv
+from quantforge.analysis.indicators import compute_all
 import json
 df = fetch_ohlcv('{{SYMBOL}}', period='6mo')
 indicators = compute_all(df)

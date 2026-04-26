@@ -1,6 +1,6 @@
 import pytest
 import yaml
-from trade_forge.config import SecureConfig, load_config
+from quantforge.config import SecureConfig, load_config
 
 
 def test_secure_config_masks_sensitive_keys():

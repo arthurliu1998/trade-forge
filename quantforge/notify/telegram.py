@@ -3,7 +3,7 @@ import logging
 import re
 import requests
 
-from trade_forge.signals.engine import Signal
+from quantforge.signals.engine import Signal
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
 """
-TradeForge Background Monitor -- main entry point.
+QuantForge Background Monitor -- main entry point.
 
 Combines:
 - Alpaca websocket streaming (real-time US)
@@ -7,7 +7,7 @@ Combines:
 - Telegram notifications
 
 Usage:
-    python -m trade_forge.monitor.monitor --config ~/.trade-forge/config.yaml
+    python -m quantforge.monitor.monitor --config ~/.quantforge/config.yaml
 """
 import argparse
 import asyncio
@@ -16,13 +16,13 @@ import os
 import sys
 from datetime import datetime
 
-from trade_forge.config import load_config
-from trade_forge.monitor.secure_logger import setup_logging
-from trade_forge.monitor.scanner import WatchlistScanner
-from trade_forge.monitor.alpaca_stream import AlpacaStream
-from trade_forge.notify.telegram import TelegramNotifier
-from trade_forge.secrets import SecretManager
-from trade_forge.safe_exceptions import install_exception_hooks
+from quantforge.config import load_config
+from quantforge.monitor.secure_logger import setup_logging
+from quantforge.monitor.scanner import WatchlistScanner
+from quantforge.monitor.alpaca_stream import AlpacaStream
+from quantforge.notify.telegram import TelegramNotifier
+from quantforge.secrets import SecretManager
+from quantforge.safe_exceptions import install_exception_hooks
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class TradeMonitor:
     async def run(self):
         """Start the monitor. Runs until stopped."""
         self._running = True
-        logger.info("TradeForge Monitor starting...")
+        logger.info("QuantForge Monitor starting...")
 
         tasks = [self._scheduled_loop()]
 
@@ -61,7 +61,7 @@ class TradeMonitor:
             logger.info("Alpaca not configured -- real-time streaming disabled")
 
         if self.notifier.is_configured():
-            self.notifier.send_text("TradeForge Monitor started")
+            self.notifier.send_text("QuantForge Monitor started")
             logger.info("Telegram notifications enabled")
         else:
             logger.warning("Telegram not configured -- notifications disabled")
@@ -124,15 +124,15 @@ class TradeMonitor:
 
 def main():
     """CLI entry point."""
-    parser = argparse.ArgumentParser(description="TradeForge Background Monitor")
+    parser = argparse.ArgumentParser(description="QuantForge Background Monitor")
     parser.add_argument(
         "--config",
-        default=os.path.expanduser("~/.trade-forge/config.yaml"),
+        default=os.path.expanduser("~/.quantforge/config.yaml"),
         help="Path to config.yaml",
     )
     parser.add_argument(
         "--log-dir",
-        default=os.path.expanduser("~/.trade-forge/logs"),
+        default=os.path.expanduser("~/.quantforge/logs"),
         help="Directory for log files",
     )
     args = parser.parse_args()

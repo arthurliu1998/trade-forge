@@ -1,5 +1,5 @@
 ---
-name: trade-forge
+name: quantforge
 description: >
   Multi-agent trading analysis system for US and Taiwan stocks.
   Coordinates 9 agents (Lead, Technical, Market, TW/US Flow, Sentinel,
@@ -7,26 +7,26 @@ description: >
   trading. Includes trajectory tracking, diagnostic codes (SIG/RGM/RSK/BHV),
   trade case studies, and learning experience system.
   Trigger: "analyze TSLA", "scan watchlist", "scan full", "market brief",
-  "/trade-forge", "review trade", "trade journal".
+  "/quantforge", "review trade", "trade journal".
 user-invocable: true
 argument-hint: "[analyze <SYMBOL> | scan [full] | brief | portfolio | review | journal | load <name>]"
 ---
 
-# TradeForge: Multi-Agent Trading Analysis System
+# QuantForge: Multi-Agent Trading Analysis System
 
 ## Quick Reference
 
 | Command | Effect |
 |---------|--------|
-| `/trade-forge` | New team setup wizard |
-| `/trade-forge analyze <SYMBOL>` | Full analysis of a single stock |
-| `/trade-forge scan` | Quick scan watchlist for signals |
-| `/trade-forge scan full` | Scan + parallel multi-agent analysis for top signals |
-| `/trade-forge brief` | Morning/evening market brief |
-| `/trade-forge portfolio` | Show positions and P&L |
-| `/trade-forge review [SYMBOL]` | Post-trade review with Socratic analysis |
-| `/trade-forge journal` | View/update trading learning log |
-| `/trade-forge load <name>` | Resume saved team |
+| `/quantforge` | New team setup wizard |
+| `/quantforge analyze <SYMBOL>` | Full analysis of a single stock |
+| `/quantforge scan` | Quick scan watchlist for signals |
+| `/quantforge scan full` | Scan + parallel multi-agent analysis for top signals |
+| `/quantforge brief` | Morning/evening market brief |
+| `/quantforge portfolio` | Show positions and P&L |
+| `/quantforge review [SYMBOL]` | Post-trade review with Socratic analysis |
+| `/quantforge journal` | View/update trading learning log |
+| `/quantforge load <name>` | Resume saved team |
 
 ## Mode Dispatch
 
@@ -55,7 +55,7 @@ Walk through one at a time:
    - Deep dive: All 9
 3. **Watchlist**: "Symbols? (comma-separated, or 'use config')"
 4. **Confirm & Spawn**:
-   - `TeamCreate({ team_name: "trade-forge-<date>" })`
+   - `TeamCreate({ team_name: "quantforge-<date>" })`
    - Read `${CLAUDE_SKILL_DIR}/roles/<role>.md`, fill placeholders
    - Spawn agents, begin as Lead
 
@@ -74,8 +74,8 @@ Output detected signals sorted by priority. No multi-agent analysis — fast che
 
 ```bash
 python3 -c "
-from trade_forge.config import load_config
-from trade_forge.monitor.scanner import WatchlistScanner
+from quantforge.config import load_config
+from quantforge.monitor.scanner import WatchlistScanner
 config = load_config()
 scanner = WatchlistScanner(config)
 signals = scanner.scan_all()
@@ -105,8 +105,8 @@ Scans all watchlist symbols, then launches **parallel multi-agent analysis** for
 
 ```bash
 python3 -c "
-from trade_forge.config import load_config
-from trade_forge.monitor.scanner import WatchlistScanner
+from quantforge.config import load_config
+from quantforge.monitor.scanner import WatchlistScanner
 config = load_config()
 scanner = WatchlistScanner(config)
 signals = scanner.scan_all()
@@ -153,7 +153,7 @@ After all subagents return, synthesize into a unified report:
 
 ```
 ══════════════════════════════════════════════════════
-TradeForge Watchlist Scan Report — YYYY-MM-DD HH:MM
+QuantForge Watchlist Scan Report — YYYY-MM-DD HH:MM
 ══════════════════════════════════════════════════════
 Regime: BULL-CALM | SPY: $XXX (>200MA) | VIX: XX
 
@@ -172,7 +172,7 @@ Top pick: NVDA — RSI oversold in uptrend, strong RS vs sector
 ### Step 5: Follow-Up
 
 After presenting the report, ask user:
-1. "要深入分析哪一檔？" → launch full `/trade-forge analyze <SYMBOL>`
+1. "要深入分析哪一檔？" → launch full `/quantforge analyze <SYMBOL>`
 2. "要執行嗎？" → proceed to Executor flow (with user confirmation)
 3. "下次再看" → done
 
@@ -232,7 +232,7 @@ Key rules:
 Record every trade decision via:
 ```bash
 python3 -c "
-from trade_forge.trajectory import TradeTrajectory
+from quantforge.trajectory import TradeTrajectory
 t = TradeTrajectory('{{TRAJECTORY_PATH}}')
 t.record(symbol='XXX', direction='long/short', signal_type='technical/flow/...',
          diagnostic_code='SIG-XXX', entry_price=0, exit_price=0,
@@ -286,7 +286,7 @@ When 2-3 cases share a common lesson, propose extracting to `patterns.md`.
 ## Security Rules (ALL roles)
 
 - NEVER read/cat .env or files with API keys
-- NEVER run: echo $API_KEY, env | grep KEY, cat ~/.trade-forge/.env
+- NEVER run: echo $API_KEY, env | grep KEY, cat ~/.quantforge/.env
 - NEVER log/print secrets
 - Check keys: `SecretManager.is_configured('KEY_NAME')`
 - LLM data via DataSanitizer only — no absolute dollar amounts

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from trade_forge.backtester import Backtester, BacktestResult, SLIPPAGE
+from quantforge.backtester import Backtester, BacktestResult, SLIPPAGE
 
 
 @pytest.fixture

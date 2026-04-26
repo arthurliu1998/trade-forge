@@ -1,8 +1,8 @@
 """Gemini API provider via Google GenAI SDK."""
 import logging
-from trade_forge.providers.base import LLMProvider
-from trade_forge.providers.sanitizer import DataSanitizer
-from trade_forge.secrets import SecretManager
+from quantforge.providers.base import LLMProvider
+from quantforge.providers.sanitizer import DataSanitizer
+from quantforge.secrets import SecretManager
 
 logger = logging.getLogger(__name__)
 

@@ -1,9 +1,9 @@
 """Watchlist scanner — scans all symbols and returns detected signals."""
 import logging
-from trade_forge.data.fetch_us import fetch_ohlcv
-from trade_forge.data.fetch_tw import fetch_tw_daily
-from trade_forge.analysis.indicators import compute_all
-from trade_forge.signals.engine import SignalEngine, Signal
+from quantforge.data.fetch_us import fetch_ohlcv
+from quantforge.data.fetch_tw import fetch_tw_daily
+from quantforge.analysis.indicators import compute_all
+from quantforge.signals.engine import SignalEngine, Signal
 
 logger = logging.getLogger(__name__)
 

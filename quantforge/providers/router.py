@@ -1,8 +1,8 @@
 """Auto-failover LLM router: tries primary provider, falls back on error."""
 import logging
-from trade_forge.providers.base import LLMProvider
-from trade_forge.providers.claude_provider import ClaudeProvider
-from trade_forge.providers.gemini_provider import GeminiProvider
+from quantforge.providers.base import LLMProvider
+from quantforge.providers.claude_provider import ClaudeProvider
+from quantforge.providers.gemini_provider import GeminiProvider
 
 logger = logging.getLogger(__name__)
 

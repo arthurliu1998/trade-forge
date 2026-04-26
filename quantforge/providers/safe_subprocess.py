@@ -2,7 +2,7 @@
 import os
 import subprocess
 
-from trade_forge.secrets import SecretManager
+from quantforge.secrets import SecretManager
 
 
 def safe_run(cmd, **kwargs):

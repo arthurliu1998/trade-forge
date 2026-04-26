@@ -1,6 +1,6 @@
 import os
 import pytest
-from trade_forge.trajectory import (
+from quantforge.trajectory import (
     init_trajectory, load_trajectory, record_decision, get_summary, get_symbol_history,
 )
 
