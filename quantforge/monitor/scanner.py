@@ -1,7 +1,5 @@
 """Watchlist scanner — scans all symbols and returns detected signals."""
 import logging
-from quantforge.data.fetch_us import fetch_ohlcv
-from quantforge.data.fetch_tw import fetch_tw_daily
 from quantforge.analysis.indicators import compute_all
 from quantforge.signals.engine import SignalEngine, Signal
 
@@ -34,6 +32,7 @@ class WatchlistScanner:
     def _scan_us(self, symbol: str) -> list[Signal]:
         """Fetch US data, compute indicators, detect signals."""
         try:
+            from quantforge.data.fetch_us import fetch_ohlcv
             df = fetch_ohlcv(symbol, period="6mo")
             if df.empty:
                 logger.warning("No data for US:%s", symbol)
@@ -48,6 +47,7 @@ class WatchlistScanner:
     def _scan_tw(self, symbol: str) -> list[Signal]:
         """Fetch TW data, compute indicators, detect signals."""
         try:
+            from quantforge.data.fetch_tw import fetch_tw_daily
             df = fetch_tw_daily(symbol)
             if df.empty:
                 logger.warning("No data for TW:%s", symbol)

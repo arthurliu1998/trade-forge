@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-26
 **Status:** Draft
-**Author:** arliu + Claude Opus
+**Author:** QuantForge Contributors
 
 ---
 

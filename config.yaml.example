@@ -24,3 +24,30 @@ notification:
     start: "00:00"
     end: "07:00"
   priority_filter: "MEDIUM"
+
+monitor:
+  monitor_mode: lite              # lite | full
+  scan_interval_minutes: 15
+  briefing_timezone: "Asia/Taipei"
+  briefing_schedule:
+    - "08:30"
+    - "14:00"
+    - "21:00"
+  cooldown:
+    same_symbol_minutes: 120
+    daily_recalc_limit: 5
+  event_detector:
+    finbert_threshold_pos: 0.9
+    finbert_threshold_neg: -0.85
+    keywords:
+      - earnings
+      - merger
+      - investigation
+      - delisting
+      - upgrade
+      - downgrade
+    article_cluster_count: 3
+    article_cluster_window_min: 15
+  reports:
+    retention_days: 30
+    output_dir: "~/.quantforge/reports"

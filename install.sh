@@ -63,6 +63,20 @@ else
     echo "  No trading experience docs found — skipping"
 fi
 
+# 5b. Download FinBERT model (optional, needed for Full mode)
+echo "[5b/7] FinBERT model..."
+if [ "${SKIP_FINBERT:-}" = "1" ]; then
+    echo "  Skipping FinBERT download (SKIP_FINBERT=1)"
+else
+    source "$QUANTFORGE_HOME/.venv/bin/activate"
+    if python3 -c "from transformers import AutoTokenizer; AutoTokenizer.from_pretrained('ProsusAI/finbert')" 2>/dev/null; then
+        echo "  FinBERT model already downloaded"
+    else
+        echo "  Downloading FinBERT model (~400MB)..."
+        python3 -m quantforge.finbert.download || echo "  WARNING: FinBERT download failed — Full mode unavailable. Install later: python -m quantforge.finbert.download"
+    fi
+fi
+
 # 6. Install git hooks (if in a git repo)
 echo "[6/7] Installing git safety hooks..."
 if [ -d "$REPO_DIR/.git" ]; then
@@ -104,3 +118,4 @@ echo "  1. Edit $QUANTFORGE_HOME/.env to add API keys"
 echo "  2. Edit $QUANTFORGE_HOME/config.yaml to set your watchlist"
 echo "  3. Activate: source $QUANTFORGE_HOME/.venv/bin/activate"
 echo "  4. Test: cd $REPO_DIR && python -m pytest tests/ -v"
+echo "  5. Start monitor: nohup python -m quantforge.monitor.monitor --config \$QUANTFORGE_HOME/config.yaml > \$QUANTFORGE_HOME/logs/monitor.log 2>&1 &"

@@ -40,3 +40,47 @@ def test_load_config_allows_env_ref(tmp_path):
     }))
     cfg = load_config(str(cfg_file))
     assert cfg["notification"]["telegram"]["bot_token"] == "${TELEGRAM_BOT_TOKEN}"
+
+
+class TestMonitorConfig:
+    def test_valid_monitor_config(self, tmp_path):
+        cfg = tmp_path / "config.yaml"
+        cfg.write_text("""
+watchlist:
+  US: [AAPL]
+  TW: ["2330"]
+signals:
+  ma_crossover: [20, 60]
+monitor:
+  monitor_mode: full
+  scan_interval_minutes: 15
+  briefing_timezone: "Asia/Taipei"
+  briefing_schedule: ["08:30", "14:00", "21:00"]
+  cooldown:
+    same_symbol_minutes: 120
+    daily_recalc_limit: 5
+""")
+        from quantforge.config import load_config
+        config = load_config(str(cfg))
+        assert config["monitor"]["monitor_mode"] == "full"
+        assert config["monitor"]["scan_interval_minutes"] == 15
+
+    def test_missing_monitor_section_uses_defaults(self, tmp_path):
+        cfg = tmp_path / "config.yaml"
+        cfg.write_text("watchlist:\n  US: [AAPL]\n")
+        from quantforge.config import load_config
+        config = load_config(str(cfg))
+        assert "monitor" not in config
+
+    def test_invalid_monitor_mode_rejected(self, tmp_path):
+        cfg = tmp_path / "config.yaml"
+        cfg.write_text("""
+watchlist:
+  US: [AAPL]
+monitor:
+  monitor_mode: turbo
+""")
+        from quantforge.config import load_config, validate_monitor_config
+        config = load_config(str(cfg))
+        validated = validate_monitor_config(config.get("monitor", {}))
+        assert validated["monitor_mode"] == "lite"
