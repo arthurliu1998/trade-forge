@@ -18,7 +18,7 @@ from quantforge.config import load_config, validate_monitor_config
 from quantforge.monitor.secure_logger import setup_logging
 from quantforge.monitor.alpaca_stream import AlpacaStream
 from quantforge.monitor.pipeline import AnalysisPipeline
-from quantforge.notify.telegram import TelegramNotifier
+from quantforge.notify import create_notifier
 from quantforge.providers.router import LLMRouter
 from quantforge.secrets import SecretManager
 from quantforge.safe_exceptions import install_exception_hooks
@@ -42,10 +42,7 @@ class TradeMonitor:
         self.scanner = WatchlistScanner(config)
         self.alpaca = AlpacaStream()
 
-        token = SecretManager.get("TELEGRAM_BOT_TOKEN")
-        chat_id = SecretManager.get("TELEGRAM_CHAT_ID")
-        sensitivity = config.get("notification", {}).get("sensitivity", "medium")
-        self.notifier = TelegramNotifier(token, chat_id, sensitivity)
+        self.notifier = create_notifier(config)
 
         # LLM router
         self.llm_router = LLMRouter()

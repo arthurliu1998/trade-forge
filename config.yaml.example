@@ -19,6 +19,8 @@ signals:
   margin_change_pct: 5
 
 notification:
+  backends:                        # desktop | discord | telegram (default)
+    - desktop
   sensitivity: medium
   quiet_hours:
     start: "00:00"

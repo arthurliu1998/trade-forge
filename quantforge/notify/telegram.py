@@ -3,6 +3,7 @@ import logging
 import re
 import requests
 
+from quantforge.notify.base import BaseNotifier
 from quantforge.signals.engine import Signal
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,7 @@ def format_signal_message(signal: Signal, sensitivity: str = "medium") -> str:
             f"{signal.message}\nDirection: {signal.direction}")
 
 
-class TelegramNotifier:
+class TelegramNotifier(BaseNotifier):
     def __init__(self, token: str, chat_id: str, sensitivity: str = "medium"):
         self._token = token
         self._chat_id = chat_id

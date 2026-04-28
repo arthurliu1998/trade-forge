@@ -30,7 +30,9 @@ def load_config(path: str) -> SecureConfig:
 
 
 def _validate_no_inline_secrets(cfg: dict) -> None:
-    telegram = cfg.get("notification", {}).get("telegram", {})
+    notif = cfg.get("notification", {})
+
+    telegram = notif.get("telegram", {})
     for field in ("bot_token", "chat_id"):
         val = telegram.get(field, "")
         if val and not val.startswith("${"):
@@ -39,6 +41,15 @@ def _validate_no_inline_secrets(cfg: dict) -> None:
                 f"(e.g., '${{TELEGRAM_BOT_TOKEN}}'), not inline values. "
                 f"Move the value to .env or keyring."
             )
+
+    discord = notif.get("discord", {})
+    val = discord.get("webhook_url", "")
+    if val and not val.startswith("${"):
+        raise ValueError(
+            "config.yaml: notification.discord.webhook_url must use env ref "
+            "(e.g., '${DISCORD_WEBHOOK_URL}'), not inline values. "
+            "Move the value to .env or keyring."
+        )
 
 
 MONITOR_DEFAULTS = {

@@ -19,6 +19,7 @@ class SecretManager:
         "ALPACA_DATA_KEY", "ALPACA_DATA_SECRET",
         "ALPACA_TRADE_KEY", "ALPACA_TRADE_SECRET",
         "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID",
+        "DISCORD_WEBHOOK_URL",
         "QUANTFORGE_DB_KEY",
     })
 

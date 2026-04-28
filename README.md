@@ -1,6 +1,6 @@
 # QuantForge
 
-Retail-grade quantitative trading system with LLM intelligence layer. Monitors US and Taiwan stock markets, detects trading signals, and delivers analysis via Telegram.
+Retail-grade quantitative trading system with LLM intelligence layer. Monitors US and Taiwan stock markets, detects trading signals, and delivers analysis via desktop notifications, Discord, or Telegram.
 
 ## Architecture
 
@@ -23,9 +23,11 @@ Retail-grade quantitative trading system with LLM intelligence layer. Monitors U
 │         ┌───────────┴───────────┐                       │
 │         ▼                       ▼                       │
 │  ┌──────────────┐       ┌──────────────┐                │
-│  │  Telegram    │       │  ReportStore │                │
-│  │  (summary)   │       │  (full .md)  │                │
-│  └──────────────┘       └──────────────┘                │
+│  │ MultiNotifier│       │  ReportStore │                │
+│  │ (desktop,    │       │  (full .md)  │                │
+│  │  discord,    │       └──────────────┘                │
+│  │  telegram)   │                                       │
+│  └──────────────┘                                       │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -53,7 +55,7 @@ LLM advisor bonus is capped at +/-10 points and **cannot override** a quant scor
 
 | Mode | What it does | Monthly Cost |
 |------|-------------|-------------|
-| **Lite** | Scan every 15 min. On HIGH/CRITICAL signal → LLM deep analysis → Telegram | ~$15-25 |
+| **Lite** | Scan every 15 min. On HIGH/CRITICAL signal → LLM deep analysis → notify | ~$15-25 |
 | **Full** | Lite + 3x/day briefings + news scraping (6 RSS) + FinBERT + critical event detection | ~$63 |
 
 ---
@@ -84,21 +86,13 @@ vim ~/.quantforge/.env
 
 | Key | Purpose | Required? |
 |-----|---------|-----------|
-| `TELEGRAM_BOT_TOKEN` | Push notifications | Yes (otherwise alerts only in logs) |
-| `TELEGRAM_CHAT_ID` | Notification target | Yes (same as above) |
 | `ANTHROPIC_API_KEY` | Claude LLM analysis | Lite: optional. Full: required |
 | `GOOGLE_AI_API_KEY` | Gemini fallback | Optional (auto-failover if Claude fails) |
 | `ALPACA_DATA_KEY` | US real-time streaming | Optional (uses polling without it) |
 | `ALPACA_DATA_SECRET` | US real-time streaming | Optional (same as above) |
-
-**How to get Telegram credentials:**
-
-1. Message [@BotFather](https://t.me/BotFather) on Telegram → `/newbot` → copy the token
-2. Message your new bot, then visit:
-   ```
-   https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates
-   ```
-   Find `"chat":{"id": 123456}` -- that's your `TELEGRAM_CHAT_ID`
+| `DISCORD_WEBHOOK_URL` | Discord notifications | Only if using discord backend |
+| `TELEGRAM_BOT_TOKEN` | Telegram notifications | Only if using telegram backend |
+| `TELEGRAM_CHAT_ID` | Telegram target | Only if using telegram backend |
 
 ### 3. Configure Watchlist
 
@@ -122,6 +116,11 @@ signals:
   volume_spike_ratio: 2.0
   rsi_overbought: 80
   rsi_oversold: 20
+
+notification:
+  backends:                        # desktop | discord | telegram
+    - desktop                      # Linux notify-send (no setup needed)
+  sensitivity: medium
 
 monitor:
   monitor_mode: lite              # lite | full
@@ -189,11 +188,11 @@ Every 15 minutes:
   ├── Scan all watchlist symbols (RSI, MA crossover, volume spike)
   ├── No signals → log "No signals detected"
   └── HIGH/CRITICAL signal found:
-       ├── Telegram: basic signal notification
+       ├── Notify: basic signal notification
        └── AnalysisPipeline (async, ~60 sec):
             ├── QuantScanner: 4-layer factor scoring
             ├── LLMRouter: Claude/Gemini deep analysis
-            ├── Telegram: short summary (3-5 lines)
+            ├── Notify: short summary (3-5 lines)
             └── ReportStore: full report → ~/.quantforge/reports/
 ```
 
@@ -204,7 +203,7 @@ Scheduled briefings (3x/day):
   08:30 TST — TW pre-market briefing
   14:00 TST — TW close report
   21:00 TST — US pre-market briefing
-  Each: score all watchlist → LLM briefing → Telegram + local report
+  Each: score all watchlist → LLM briefing → notify + local report
 
 News + Event detection (every 15 min):
   ├── NewsScraper: fetch 6 RSS sources
@@ -215,19 +214,32 @@ News + Event detection (every 15 min):
        ├── 3+ same-direction articles on one stock
        ├── Quant score change > 15 points
        └── Regime transition or VIX > 30
-       → Instant edge recalculation → Telegram alert
+       → Instant edge recalculation → notify alert
 ```
 
-### Telegram Notifications
+### Notifications
 
-**Signal alert:**
+QuantForge supports pluggable notification backends. Configure one or more in `config.yaml`:
+
+```yaml
+notification:
+  backends:
+    - desktop    # Linux notify-send (zero config)
+    - discord    # Discord webhook (set DISCORD_WEBHOOK_URL in .env)
+    - telegram   # Telegram bot (set TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID in .env)
+  sensitivity: medium   # high | medium | low
+```
+
+If `backends` is omitted, defaults to `["telegram"]` for backward compatibility.
+
+**Signal alert example:**
 ```
 NVDA — BUY (Quant: 78.5 + Advisor: +6.2)
 Regime: bull_trend | Trigger: rsi_oversold
 LLM: Strong data center demand driving momentum...
 ```
 
-**Briefing:**
+**Briefing example:**
 ```
 QuantForge TW Pre-Market — 2026-04-27 08:30
 Regime: bull_trend | VIX: 18.2
@@ -306,7 +318,7 @@ The system is designed to work with whatever components are available:
 
 | Missing Component | Impact |
 |-------------------|--------|
-| Telegram | Alerts only in logs |
+| All notification backends | Alerts only in logs |
 | LLM (Claude/Gemini) | Quant-only scoring, no advisor analysis |
 | FinBERT | Full mode unavailable (falls back to lite) |
 | Alpaca | No real-time streaming, 15-min polling only |
@@ -359,7 +371,12 @@ quantforge/
 │   ├── alpaca_stream.py        # Real-time US stock streaming
 │   └── secure_logger.py        # Log sanitization (redacts secrets)
 ├── providers/                  # LLM router (Claude/Gemini auto-failover)
-├── notify/telegram.py          # Telegram push notifications
+├── notify/                     # Pluggable notification backends
+│   ├── base.py                 # BaseNotifier interface
+│   ├── desktop.py              # Linux notify-send
+│   ├── discord.py              # Discord webhook
+│   ├── multi.py                # Fan-out to multiple backends
+│   └── telegram.py             # Telegram bot
 ├── secrets.py                  # 3-tier secret management (keyring → env → .env)
 └── safe_exceptions.py          # Exception sanitization
 ```
@@ -384,7 +401,7 @@ quantforge/
 - yfinance -- US market data (free)
 - feedparser -- RSS news fetching
 - transformers + torch -- FinBERT sentiment model
-- python-telegram-bot -- notifications
+- python-telegram-bot -- Telegram notifications (optional)
 - anthropic SDK -- Claude LLM
 - asyncio -- concurrent scanning and analysis
 
